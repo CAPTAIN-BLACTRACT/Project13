@@ -89,7 +89,7 @@ private:
     DSP_Choice<juce::dsp::DelayLine<float>> delay;
     DSP_Choice<juce::dsp::Phaser<float>> phaser;
     DSP_Choice<juce::dsp::Chorus<float>> chorus;
-    DSP_Choice<juce::dsp::LadderFilter<float>> overdrive, ladderfilter;
+    DSP_Choice<juce::dsp::LadderFilter<float>> overdrive, ladderFilter;
 
     using DSP_Pointers = std::array<juce::dsp::ProcessorBase*, static_cast<size_t>(DSP_Option::END_OF_LIST)>;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Project13AudioProcessor)
