@@ -20,6 +20,8 @@ auto getChorusDepthName() { return juce::String("Chorus depth%"); }
 auto getChorusCenterDelayName() { return juce::String("Chorus center Delay ms"); }
 auto getChorusFeedbackName() { return juce::String("Chorus feedback percent"); }
 auto getChorusMixName() { return juce::String("Chorus mix"); }
+
+auto getOverdriveSaturationName() { return juce::String("Overdrive Saturation"); };
 //==============================================================================
 Project13AudioProcessor::Project13AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -47,6 +49,8 @@ Project13AudioProcessor::Project13AudioProcessor()
         &chorusFeedbackPercent,
         &chorusMixPercent,
 
+        &overdriveSaturation,
+
 
     };
 
@@ -63,6 +67,8 @@ Project13AudioProcessor::Project13AudioProcessor()
         &getChorusCenterDelayName,
         &getChorusFeedbackName,
         &getChorusMixName,
+
+        &getOverdriveSaturationName,
 
 
     };
@@ -292,6 +298,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout Project13AudioProcessor::cre
         juce::NormalisableRange<float>(0.01f, 1.f, 0.01f, 1.f),
         0.05f,
         "%"));
+
+    /*
+        overdrive
+        uses the drive portion of the ladder filter class for now
+        drive 1-100
+    */
+    //drive 1-100
+    name = getOverdriveSaturationName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(1.f, 100.f, 0.1f, 1.f),
+        1.f,
+        ""));
 
 
     return layout;
