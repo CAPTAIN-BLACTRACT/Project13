@@ -39,7 +39,15 @@ Project13AudioProcessor::Project13AudioProcessor()
         &phaserCenterFreqHz,
         &phaserDepthPercent,
         &phaserFeedbackPercent,
-        &phaserMixPercent
+        &phaserMixPercent,
+
+        &chorusRateHz,
+        &chorusDepthPercent,
+        &chorusCenterDelayMs,
+        &chorusFeedbackPercent,
+        &chorusMixPercent,
+
+
     };
 
     auto floatNameFuncs = std::array
@@ -48,7 +56,15 @@ Project13AudioProcessor::Project13AudioProcessor()
         &getPhaserCenterFreqName,
         &getPhaserDepthName,
         &getPhaserFeedbackName,
-        &getPhaserMixName
+        &getPhaserMixName,
+
+        &getChorusRateName,
+        &getChorusDepthName,
+        &getChorusCenterDelayName,
+        &getChorusFeedbackName,
+        &getChorusMixName,
+
+
     };
 
     for (size_t i = 0; i < floatParams.size(); ++i)
@@ -237,6 +253,47 @@ juce::AudioProcessorValueTreeState::ParameterLayout Project13AudioProcessor::cre
     Feedback: -1 to 1
     Mix: 0 ot 1
 */
+    name = getChorusRateName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(0.01f, 100.f, 0.01f, 1.f),
+        0.2f,
+        "Hz"));
+    //chorus depth
+    name = getChorusDepthName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(0.01f, 1.f, 0.01f, 1.f),
+        0.05f,
+        "%"));
+    //chorus center delay
+    name = getChorusCenterDelayName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(1.f, 100.f, 0.1f, 1.f),
+        7.f,
+        "%"));
+    //chorus feedback
+    name = getChorusFeedbackName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(-1.f, 1.f, 0.01f, 1.f),
+        0.0f,
+        "%"));
+    //chorus  mix
+    name = getChorusMixName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ name,versionHint },
+        name,
+        juce::NormalisableRange<float>(0.01f, 1.f, 0.01f, 1.f),
+        0.05f,
+        "%"));
+
+
     return layout;
 }
 
