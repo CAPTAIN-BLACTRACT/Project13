@@ -40,6 +40,22 @@ auto getLadderFilterChoices()
         "BPF24"   // band-pass 24 dB/octav
     };
 }
+
+auto getGeneralFilterChoices()
+{
+    return juce::StringArray
+    {
+        "Peak",
+        "bandpass",
+        "notch",
+        "allpass",
+    };
+}
+
+auto getGeneralFilterModeName() {return juce::String("gereral filter mode"); }
+auto getGeneralFilterFreqName() { return juce::String("general filter frequency hz"); }
+auto getGeneralFilterQuatlityName() { return juce::String("genrel filter quality"); }
+auto getGeneralFilterGainName() { return juce::String("general filter gain"); }
 //==============================================================================
 Project13AudioProcessor::Project13AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -73,6 +89,10 @@ Project13AudioProcessor::Project13AudioProcessor()
          &ladderFilterResonance,
          &ladderFilterDrive,
 
+          
+          &generalilterFreqHz,
+          &generalilterQuality,
+          &generalilterGain,
 
     };
 
@@ -96,6 +116,11 @@ Project13AudioProcessor::Project13AudioProcessor()
         &getLadderFilterResonanceName,
         &getLadderFilterDriveName,
 
+        &getLadderFilterCutoffName,
+        &getLadderFilterResonanceName,
+        &getLadderFilterDriveName,
+ 
+
     };
 
     for (size_t i = 0; i < floatParams.size(); ++i)
@@ -105,10 +130,27 @@ Project13AudioProcessor::Project13AudioProcessor()
         jassert(*ptrToParamPtr != nullptr);
     }
 
-    ladderFilterMode = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(getLadderFilterModeName()));
+    auto choiceParams = std::array
+    {
+        &ladderFilterMode,
+        &generalFilterMode,
+    };
 
-    jassert(ladderFilterMode != nullptr);
+    auto choiceNameFuncs = std::array
+    {
+        &getLadderFilterModeName,
+        &getGeneralFilterModeName,
+    };
+
+    for (size_t i = 0; i < choiceParams.size(); ++i)
+    {
+        auto ptrToParamPtr = choiceParams[i];
+        *ptrToParamPtr = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(choiceNameFuncs[i]()));
+        jassert(*ptrToParamPtr != nullptr);
+    }
+
 }
+
 
 Project13AudioProcessor::~Project13AudioProcessor()
 {
@@ -379,6 +421,54 @@ juce::AudioProcessorValueTreeState::ParameterLayout Project13AudioProcessor::cre
         juce::NormalisableRange<float>(1.f, 100.f, 0.1f, 1.f),
         1.f,
         ""));
+
+    /*General Filter
+        
+        Mode: Peak, bandpass,  notch, allpass
+        freq: 20hz -20000hz in 1hz steps
+        Q: 0.1 - 10 in 0.05 steps
+        gain: -24db to 24 db in 0.5 db increments
+     */
+    //mode
+    name = getGeneralFilterModeName();
+    choices = getGeneralFilterChoices();
+    layout.add(std::make_unique<juce::AudioParameterChoice>
+        (
+            juce::ParameterID{ name,versionHint },
+            name,
+            choices,
+            0
+        ));
+    //freq
+    name = getGeneralFilterFreqName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>
+        (
+            juce::ParameterID{ name,versionHint },
+            name,
+            juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f),
+            750.f,
+            "Hz"
+        ));
+    //quality
+    name = getGeneralFilterQuatlityName();
+    layout.add(std::make_unique<juce::AudioParameterFloat>
+        (
+            juce::ParameterID{ name,versionHint },
+            name,
+            juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f),
+            1.f,
+            ""
+        ));
+    //gain
+    name = getGeneralFilterGainName();
+    layout.add(std::make_unique < juce::AudioParameterFloat >
+        (
+            juce::ParameterID{ name,versionHint },
+            name,
+            juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f),
+            0.f,
+            "dB"
+        ));
 
     return layout;
 
